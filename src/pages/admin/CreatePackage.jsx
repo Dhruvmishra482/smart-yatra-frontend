@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import api from "../../utils/axiosInstance";
 import toast from "react-hot-toast";
-const [loading, setLoading] = useState(false);
+
 
 const CreatePackage = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +13,7 @@ const CreatePackage = () => {
     category: "",
     highlights: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const [images, setImages] = useState([]);
 

@@ -1,5 +1,5 @@
 
-
+import React from 'react'
 const TermsAndConditions = () => {
   return (
     <div className="min-h-screen px-6 py-12 max-w-5xl mx-auto text-gray-800">
