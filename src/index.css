@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.form-style {
+@apply w-full rounded-md bg-gray-800 p-3 text-white border border-gray-700;
+}
+.btn-primary {
+  @apply w-full bg-yellow-50 text-black py-2 px-4 rounded-md font-semibold hover:bg-yellow-100 transition;
+}
+.btn-google {
+  @apply w-full flex items-center justify-center gap-2 border border-gray-700 text-black py-2 rounded-md hover:bg-gray-900 transition;
+}
+.input-field {
+  @apply w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-200;
+}
