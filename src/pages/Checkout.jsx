@@ -43,6 +43,8 @@ const Checkout = () => {
   };
 
   const handlePayment = async () => {
+    console.log("RAZORPAY_KEY_ID (Frontend):", import.meta.env.VITE_RAZORPAY_KEY_ID);
+
     if (
       !contactDetails.name ||
       !contactDetails.email ||
