@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import Spinner from "../components/common/Spinner";
 import ButtonLoader from "../components/common/ButtonLoader";
+import { loadScript } from "../utils/loadRazorpayScript"; // make sure this exists
 
 const Checkout = () => {
   const { id: packageId } = useParams();
@@ -57,8 +58,50 @@ const Checkout = () => {
       });
 
       const order = res.data.order;
-      const redirectURL = `https://api.razorpay.com/v1/checkout/embedded?order_id=${order.id}&key_id=${import.meta.env.VITE_RAZORPAY_KEY_ID}`;
-      window.location.href = redirectURL;
+
+      const success = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+      if (!success) {
+        toast.error("Razorpay SDK failed to load");
+        return;
+      }
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Smart Yatra",
+        description: "Trip Booking",
+        image: "/logo.png",
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            const verifyRes = await api.post("/payment/verify", {
+              ...response,
+              noOfPersons,
+              contactDetails,
+              tripPackageId: packageId,
+            });
+            toast.success("Booking Successful!");
+            navigate("/my-bookings");
+          } catch (err) {
+            toast.error("Payment verification failed");
+          }
+        },
+        prefill: {
+          name: contactDetails.name,
+          email: contactDetails.email,
+          contact: contactDetails.phone,
+        },
+        notes: {
+          address: "Smart Yatra Corporate Office",
+        },
+        theme: {
+          color: "#2563eb",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (error) {
       toast.error("Error initiating payment");
     }
