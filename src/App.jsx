@@ -28,11 +28,14 @@ import About from "./pages/About";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ScrollToTop from "./utils/ScrollToTop";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import MyDetails from "./pages/user/MyDetails";
+import AdminDetails from "./pages/admin/AdminDetails";
 
 function App() {
   return (
     <>
-      <ScrollToTop/>
+      <ScrollToTop />
       <Navbar />
       <Routes>
         {/* Public Routes */}
@@ -49,10 +52,9 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmail />} />
 
         <Route path="/about" element={<About />} />
-<Route path="/faq" element={<FAQ />} />
-<Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-<Route path="/privacy-policy" element={<PrivacyPolicy />} />
-
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
         <Route
           path="/checkout/:id"
@@ -75,6 +77,15 @@ function App() {
           }
         />
         <Route
+          path="/my-details"
+          element={
+            <ProtectedRoute allowedRoles={["visitor"]}>
+              <MyDetails />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/my-tickets"
           element={
             <ProtectedRoute allowedRoles={["visitor"]}>
@@ -92,6 +103,25 @@ function App() {
             </ProtectedRoute>
           }
         />
+          <Route
+          path="/admin/my-details"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminDetails/>
+            </ProtectedRoute>
+          }
+        />
+
+
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/admin/my-packages"
           element={

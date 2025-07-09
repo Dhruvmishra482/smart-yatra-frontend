@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
+import { FaCheckCircle, FaTimesCircle, FaClock } from "react-icons/fa";
 
 const BookingCard = ({ booking }) => {
   const navigate = useNavigate();
-
 
   const {
     tripPackages,
@@ -20,52 +20,49 @@ const BookingCard = ({ booking }) => {
     });
   };
 
+  const statusIcon =
+    status === "success" ? (
+      <FaCheckCircle className="text-green-600" />
+    ) : status === "failed" ? (
+      <FaTimesCircle className="text-red-500" />
+    ) : (
+      <FaClock className="text-yellow-500" />
+    );
+
   return (
-    <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition duration-300 overflow-hidden border border-gray-200 flex flex-col justify-between">
-      {/* Package Image */}
+    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition duration-300 overflow-hidden border border-gray-200 flex flex-col justify-between">
       <img
         src={tripPackages?.images?.[0]?.url || "/default-image.jpg"}
         alt={tripPackages?.title}
         className="w-full h-48 object-cover"
       />
 
-      {/* Details */}
-      <div className="p-4 flex flex-col gap-2">
-        <h3 className="text-xl font-semibold text-gray-800">
-          {tripPackages?.title}
-        </h3>
+      <div className="p-5 flex flex-col gap-2">
+        <div className="flex justify-between items-center">
+          <h3 className="text-xl font-semibold text-gray-800">
+            {tripPackages?.title}
+          </h3>
+          {statusIcon}
+        </div>
         <p className="text-gray-600 text-sm">{tripPackages?.location}</p>
 
-        <div className="text-sm text-gray-700 mt-2">
+        <div className="text-sm text-gray-700 mt-2 space-y-1">
           <p>
-            <span className="font-medium">Duration:</span> {tripPackages?.days} days
+            <span className="font-medium">Duration:</span>{" "}
+            {tripPackages?.days} Days
           </p>
           <p>
-            <span className="font-medium">Persons:</span> {noOfPerson}
+            <span className="font-medium">Travellers:</span> {noOfPerson}
           </p>
           <p>
             <span className="font-medium">Amount Paid:</span> ₹{totalAmount}
           </p>
           <p>
-            <span className="font-medium">Status:</span>{" "}
-            <span
-              className={`font-semibold ${
-                status === "success"
-                  ? "text-green-600"
-                  : status === "failed"
-                  ? "text-red-500"
-                  : "text-yellow-500"
-              }`}
-            >
-              {status}
-            </span>
-          </p>
-          <p className="text-xs text-gray-500 mt-1">
-            Booked on {new Date(createdAt).toLocaleDateString()}
+            <span className="font-medium">Booking Date:</span>{" "}
+            {new Date(createdAt).toLocaleDateString()}
           </p>
         </div>
 
-        {/* Leave a Review Button */}
         {status === "success" && (
           <button
             onClick={handleReviewClick}

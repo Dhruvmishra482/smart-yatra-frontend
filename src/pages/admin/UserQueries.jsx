@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import api from "../../utils/axiosInstance";
 import Spinner from "../../components/common/Spinner";
+import { motion } from "framer-motion";
+import { FaEdit, FaSave, FaTimes } from "react-icons/fa";
 
 const statusColors = {
   open: "text-yellow-600 bg-yellow-100",
@@ -54,10 +56,7 @@ const Userqueries = () => {
         return;
       }
 
-      const res = await api.put(`/ticket/${ticketId}/status`, {
-        status,
-        resolution,
-      });
+      await api.put(`/ticket/${ticketId}/status`, { status, resolution });
 
       toast.success("Ticket updated successfully");
       setEditingTicketId(null);
@@ -65,26 +64,48 @@ const Userqueries = () => {
       fetchQueries();
     } catch (err) {
       toast.error("Failed to update ticket");
-    
     }
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-6 text-blue-800 mt-20">
+    <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-blue-100 px-6 py-14 mt-10">
+      <motion.h1
+        className="text-4xl font-bold mb-10 text-center text-blue-800"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         User Queries
-      </h1>
+      </motion.h1>
 
       {loading ? (
-        <p className="text-center text-gray-600"><Spinner/></p>
+        <div className="flex justify-center">
+          <Spinner />
+        </div>
       ) : queries.length === 0 ? (
-        <p className="text-center text-gray-500">No user queries found.</p>
+        <p className="text-center text-gray-500 text-lg">No user queries found.</p>
       ) : (
-        <div className="grid gap-6">
+        <motion.div
+          className="grid gap-6"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                staggerChildren: 0.1,
+              },
+            },
+          }}
+        >
           {queries.map((ticket) => (
-            <div
+            <motion.div
               key={ticket._id}
-              className="bg-white shadow-md rounded-md p-6 border border-gray-200 hover:shadow-lg transition"
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 },
+              }}
+              className="bg-white/70 backdrop-blur-lg border border-gray-200 rounded-xl shadow-md hover:shadow-lg p-6 transition-all"
             >
               <div className="flex justify-between items-start mb-2">
                 <div>
@@ -94,19 +115,15 @@ const Userqueries = () => {
                   <p className="text-gray-700 mt-1">{ticket.description}</p>
                 </div>
                 <span
-                  className={`text-sm px-3 py-1 rounded-full font-medium capitalize h-fit ${
-                    statusColors[ticket.status]
-                  }`}
+                  className={`text-sm px-3 py-1 rounded-full font-medium capitalize h-fit ${statusColors[ticket.status]}`}
                 >
                   {ticket.status}
                 </span>
               </div>
 
               {ticket.resolution && (
-                <div className="mt-2 bg-green-50 border border-green-200 p-3 rounded-md">
-                  <p className="text-sm text-green-800">
-                    <strong>Resolution:</strong> {ticket.resolution}
-                  </p>
+                <div className="mt-3 bg-green-50 border border-green-200 p-3 rounded-md text-sm text-green-800">
+                  <strong>Resolution:</strong> {ticket.resolution}
                 </div>
               )}
 
@@ -115,10 +132,10 @@ const Userqueries = () => {
               </p>
 
               <button
-                className="mt-4 text-sm text-blue-600 underline"
+                className="mt-4 text-sm text-blue-600 hover:underline flex items-center gap-1"
                 onClick={() => handleEditClick(ticket)}
               >
-                Update Status
+                <FaEdit className="text-sm" /> Update Status
               </button>
 
               {editingTicketId === ticket._id && (
@@ -127,7 +144,7 @@ const Userqueries = () => {
                     Status
                   </label>
                   <select
-                    className="w-full border px-3 py-2 rounded-md mb-2"
+                    className="w-full border px-3 py-2 rounded-md mb-3 focus:ring-2 focus:ring-blue-500"
                     value={form.status}
                     onChange={(e) =>
                       setForm({ ...form, status: e.target.value })
@@ -142,39 +159,39 @@ const Userqueries = () => {
                   </select>
 
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Resolution (Optional unless closing)
+                    Resolution (Required when closing)
                   </label>
                   <textarea
                     rows="2"
-                    className="w-full border px-3 py-2 rounded-md"
+                    className="w-full border px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-500"
                     value={form.resolution}
                     onChange={(e) =>
                       setForm({ ...form, resolution: e.target.value })
                     }
                   />
 
-                  <div className="flex gap-4 mt-3">
+                  <div className="flex gap-4 mt-4">
                     <button
-                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center gap-2 text-sm"
                       onClick={() => handleUpdate(ticket._id)}
                     >
-                      Save
+                      <FaSave /> Save
                     </button>
                     <button
-                      className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
+                      className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded flex items-center gap-2 text-sm"
                       onClick={() => {
                         setEditingTicketId(null);
                         setForm({ status: "", resolution: "" });
                       }}
                     >
-                      Cancel
+                      <FaTimes /> Cancel
                     </button>
                   </div>
                 </div>
               )}
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
     </div>
   );

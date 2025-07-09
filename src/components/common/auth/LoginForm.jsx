@@ -7,7 +7,7 @@ import { useAuth } from "../../../context/AuthContext";
 import api from "../../../utils/axiosInstance";
 import { jwtDecode } from "jwt-decode";
 import ButtonLoader from "../ButtonLoader";
-
+import { GoogleLogin } from "@react-oauth/google";
 
 function LoginForm() {
   const navigate = useNavigate();
@@ -40,18 +40,21 @@ function LoginForm() {
       });
 
       const { token } = response.data;
-     
-      login(token);
+      login(token); // context update
       toast.success("Login Successful");
-      navigate("/");
+
+      const { role } = jwtDecode(token);
+      if (role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
-  
       toast.error(error?.response?.data?.message || "Login Failed");
     } finally {
       setLoading(false);
     }
   };
-
 
   return (
     <form
@@ -106,14 +109,14 @@ function LoginForm() {
       </label>
 
       {/* Sign In Button */}
-     <button
-  type="submit"
-  disabled={loading}
-  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition"
->
-  {loading && <ButtonLoader />}
-  {loading ? "Signing In..." : "Sign In"}
-</button>
+      <button
+        type="submit"
+        disabled={loading}
+        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition"
+      >
+        {loading && <ButtonLoader />}
+        {loading ? "Signing In..." : "Sign In"}
+      </button>
 
       {/* Divider */}
       <div className="flex items-center gap-x-2 mt-4">
@@ -123,14 +126,41 @@ function LoginForm() {
       </div>
 
       {/* Google Login */}
-      <button
-        type="button"
-        className="mt-1 flex items-center justify-center gap-x-2 w-full border border-gray-300 text-gray-700 rounded-md py-2 hover:scale-[1.02] transition-transform duration-300"
-        onClick={() => toast("Google login not implemented yet")}
-      >
-        <FcGoogle size={22} />
-        <span className="text-sm font-medium">Sign in with Google</span>
-      </button>
+     {/* Google Login */}
+<div className="mt-1">
+  <GoogleLogin
+    width="100%"
+    onSuccess={async (credentialResponse) => {
+      try {
+        const res = await api.post(
+          "/auth/google",
+          {
+            idToken: credentialResponse.credential,
+          },
+          {
+            withCredentials: true, // ✅ send cookie with request (already set in axios instance)
+          }
+        );
+
+        const { token } = res.data;
+
+        login(token); // ✅ context update (React)
+
+        const { role } = jwtDecode(token);
+        toast.success("Google Login Successful");
+
+        navigate(role === "admin" ? "/admin/dashboard" : "/");
+      } catch (err) {
+        console.error("Google login error:", err);
+        toast.error("Google Login Failed");
+      }
+    }}
+    onError={() => {
+      toast.error("Google Sign in Failed");
+    }}
+  />
+
+      </div>
     </form>
   );
 }

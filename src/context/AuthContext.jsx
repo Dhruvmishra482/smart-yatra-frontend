@@ -44,7 +44,8 @@ export const AuthProvider = ({ children }) => {
 
     const user = {
       ...decoded,
-      accountType: decoded.role, // ✅ Ensuring consistent structure
+      accountType: decoded.role, 
+         firstName: decoded.firstName
     };
 
     setAuth({ token, user, loading: false });

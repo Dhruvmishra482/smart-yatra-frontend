@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import api from "../utils/axiosInstance";
 import toast from "react-hot-toast";
 import ButtonLoader from "../components/common/ButtonLoader";
+import { motion } from "framer-motion";
+import { FaBus, FaTrain, FaPlane } from "react-icons/fa";
 
 const CompareFares = () => {
   const [formData, setFormData] = useState({
@@ -27,40 +29,54 @@ const CompareFares = () => {
     try {
       const res = await api.post("/fare/search", formData);
       setFares(res.data.data);
-   
       toast.success("Fares fetched successfully");
     } catch (error) {
-    
       toast.error(error.response?.data?.message || "Failed to fetch fares");
     }
     setLoading(false);
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-10 px-4">
-      <h1 className="text-3xl font-bold text-center text-blue-800 mb-8">Compare Fares</h1>
+  const getIcon = (mode) => {
+    if (mode === "bus") return <FaBus className="text-lg mr-2 text-blue-600" />;
+    if (mode === "train") return <FaTrain className="text-lg mr-2 text-green-600" />;
+    if (mode === "flight") return <FaPlane className="text-lg mr-2 text-purple-600" />;
+  };
 
-      {/* Form Section */}
-      <form
+  return (
+    <div className="min-h-screen bg-gradient-to-tr from-sky-100 via-white to-sky-200 px-4 py-14 mt-14">
+      <motion.h1
+        className="text-4xl font-bold text-center text-blue-700 mb-10"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        🚀 Compare Fares
+      </motion.h1>
+
+      {/* Form */}
+      <motion.form
         onSubmit={handleSubmit}
-        className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md grid grid-cols-1 md:grid-cols-2 gap-4"
+        className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 bg-white shadow-xl rounded-2xl p-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
       >
         <input
           type="text"
           name="from"
+          placeholder="From"
           value={formData.from}
           onChange={handleChange}
-          placeholder="From"
-          className="border border-gray-300 rounded px-4 py-2"
+          className="border rounded-md px-4 py-3 focus:ring-2 focus:ring-blue-300 outline-none"
           required
         />
         <input
           type="text"
           name="to"
+          placeholder="To"
           value={formData.to}
           onChange={handleChange}
-          placeholder="To"
-          className="border border-gray-300 rounded px-4 py-2"
+          className="border rounded-md px-4 py-3 focus:ring-2 focus:ring-blue-300 outline-none"
           required
         />
         <input
@@ -68,15 +84,14 @@ const CompareFares = () => {
           name="travelDate"
           value={formData.travelDate}
           onChange={handleChange}
-          className="border border-gray-300 rounded px-4 py-2"
+          className="border rounded-md px-4 py-3 focus:ring-2 focus:ring-blue-300 outline-none"
           required
         />
         <select
           name="modeOfTransport"
           value={formData.modeOfTransport}
           onChange={handleChange}
-          className="border border-gray-300 rounded px-4 py-2"
-          required
+          className="border rounded-md px-4 py-3 focus:ring-2 focus:ring-blue-300 outline-none"
         >
           <option value="bus">Bus</option>
           <option value="train">Train</option>
@@ -85,52 +100,58 @@ const CompareFares = () => {
 
         <button
           type="submit"
-          className="col-span-full bg-blue-600 text-white rounded py-2 hover:bg-blue-700 transition"
           disabled={loading}
+          className="col-span-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-md transition flex items-center justify-center gap-2"
         >
-          {loading && <ButtonLoader/>}
-          {loading ? "Searching..." : "Compare"}
+          {loading && <ButtonLoader />}
+          {loading ? "Searching..." : "Compare Now"}
         </button>
-      </form>
+      </motion.form>
 
       {/* Result Section */}
-      <div className="max-w-5xl mx-auto mt-10">
+      <div className="max-w-6xl mx-auto mt-12">
         {fares.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {fares.map((fare, index) => (
-              <div
-                key={index}
-                className="bg-white p-5 rounded-lg shadow hover:shadow-xl transition-all border border-gray-200"
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            {fares.map((fare, idx) => (
+              <motion.div
+                key={idx}
+                whileHover={{ scale: 1.02 }}
+                className="bg-white/70 backdrop-blur-md p-5 rounded-xl shadow-xl border border-gray-200 transition"
               >
-                <h3 className="text-xl font-semibold text-blue-800 flex justify-between items-center">
-                  🚌 {fare.operator}
-                  <span className="text-green-600 font-bold text-lg">₹{fare.fare}</span>
-                </h3>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center font-bold text-lg text-blue-800">
+                    {getIcon(fare.mode)} {fare.operator}
+                  </div>
+                  <div className="text-green-600 text-lg font-semibold">₹{fare.fare}</div>
+                </div>
 
-                <p className="mt-1 text-gray-700">
-                  <span className="font-medium">From:</span> {fare.from} → <span className="font-medium">To:</span>{" "}
-                  {fare.to}
+                <p className="text-gray-700 text-sm">
+                  <strong>From:</strong> {fare.from} → <strong>To:</strong> {fare.to}
                 </p>
-
-                <p className="mt-1 text-gray-600">
-                  <span className="font-medium">Departure:</span> {fare.departureTime} &nbsp;|&nbsp;
-                  <span className="font-medium">Arrival:</span> {fare.arrivalTime}
+                <p className="text-gray-700 text-sm">
+                  <strong>Departure:</strong> {fare.departureTime} | <strong>Arrival:</strong> {fare.arrivalTime}
                 </p>
-
-                <p className="mt-1 text-gray-600">
-                  <span className="font-medium">Mode:</span> {fare.mode} &nbsp;|&nbsp;
-                  <span className="font-medium">Class:</span> {fare.class}
+                <p className="text-gray-700 text-sm">
+                  <strong>Class:</strong> {fare.class} | <strong>Duration:</strong> {fare.duration}
                 </p>
-
-                <p className="mt-1 text-gray-500">
-                  <span className="font-medium">Duration:</span> {fare.duration}
-                </p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         ) : (
           !loading && (
-            <p className="text-gray-500 text-center text-lg mt-6">No fares found for the given route.</p>
+            <motion.p
+              className="text-center text-gray-500 mt-10 text-lg"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              No fares found for the selected route.
+            </motion.p>
           )
         )}
       </div>

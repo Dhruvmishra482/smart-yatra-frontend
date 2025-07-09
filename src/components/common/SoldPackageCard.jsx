@@ -17,12 +17,12 @@ const SoldPackageCard = ({ packages}) => {
       <h3 className="text-xl font-semibold text-blue-700 mb-2">
         {tripPackages?.title}
       </h3>
-      <p className="text-gray-700 mb-1">
+      {/* <p className="text-gray-700 mb-1">
         <strong>Location:</strong> {tripPackages?.location}
       </p>
       <p className="text-gray-700 mb-1">
         <strong>Price Per Person:</strong> ₹{tripPackages?.price}
-      </p>
+      </p> */}
       <p className="text-gray-700 mb-1">
         <strong>No. of Persons:</strong> {noOfPerson}
       </p>

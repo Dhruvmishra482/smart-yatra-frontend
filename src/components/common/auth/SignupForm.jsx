@@ -1,12 +1,18 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import GoogleButton from "react-google-button";
 import api from "../../../utils/axiosInstance";
 import ButtonLoader from "../ButtonLoader";
+import GoogleButton from "react-google-button";
+import { motion } from "framer-motion";
 
+import { useAuth } from "../../../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
+import { GoogleLogin } from "@react-oauth/google";
 const Signup = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -38,113 +44,141 @@ const Signup = () => {
     }
     setLoading(false);
   };
+  
 
- return (
-  <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-white via-blue-50 to-blue-100 px-4">
-    <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-2xl animate-fade-in-up transition-all duration-500">
-      <h2 className="text-3xl font-bold text-sky-800 text-center mb-6">Start Your travel journey</h2>
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-blue-100 via-white to-blue-200">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md bg-white/70 backdrop-blur-lg border border-white/30 rounded-2xl shadow-xl p-8"
+      >
+        <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">
+          Sign Up
+        </h2>
 
-      <form onSubmit={submitHandler} className="space-y-4">
-        {/* Name Fields */}
-        <div className="flex gap-3">
+        <form onSubmit={submitHandler} className="space-y-4 text-sm">
+          <div className="flex gap-3">
+            <input
+              type="text"
+              name="firstName"
+              placeholder="First Name"
+              value={formData.firstName}
+              onChange={changeHandler}
+              required
+              className="w-1/2 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
+            />
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Last Name"
+              value={formData.lastName}
+              onChange={changeHandler}
+              required
+              className="w-1/2 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
+            />
+          </div>
+
           <input
-            type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={formData.firstName}
+            type="tel"
+            name="mobileNumber"
+            placeholder="Mobile Number"
+            value={formData.mobileNumber}
             onChange={changeHandler}
             required
-            className="w-1/2 px-4 py-2 border border-gray-300 rounded-3xl text-sm text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:scale-[1.02]"
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
           />
+
           <input
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={formData.lastName}
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
             onChange={changeHandler}
             required
-            className="w-1/2 px-4 py-2 border border-gray-300 rounded-3xl text-sm text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:scale-[1.02]"
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
           />
-        </div>
 
-        <input
-          type="tel"
-          name="mobileNumber"
-          placeholder="Mobile Number"
-          value={formData.mobileNumber}
-          onChange={changeHandler}
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded-3xl text-sm text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:scale-[1.02]"
-        />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={changeHandler}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
+          />
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={changeHandler}
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded-3xl text-sm text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:scale-[1.02]"
-        />
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm Password"
+            value={formData.confirmPassword}
+            onChange={changeHandler}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
+          />
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={changeHandler}
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded-3xl text-sm text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:scale-[1.02]"
-        />
+          <select
+            name="accountType"
+            value={formData.accountType}
+            onChange={changeHandler}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-400 outline-none"
+          >
+            <option value="visitor">Visitor</option>
+            <option value="admin">Admin</option>
+          </select>
 
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirm Password"
-          value={formData.confirmPassword}
-          onChange={changeHandler}
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded-3xl text-sm text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:scale-[1.02]"
-        />
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition-all flex justify-center items-center gap-2"
+          >
+            {loading && <ButtonLoader />}
+            {loading ? "Creating..." : "Sign Up"}
+          </button>
+        </form>
 
-        <select
-          name="accountType"
-          value={formData.accountType}
-          onChange={changeHandler}
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded-3xl text-sm bg-white text-gray-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        >
-          <option value="visitor">Visitor</option>
-          <option value="admin">Admin</option>
-        </select>
+        {/* Google Auth Button */}
+        <div className="mt-5">
+  <GoogleLogin
+    width="100%"
+    onSuccess={async (credentialResponse) => {
+      try {
+        const res = await api.post("/auth/google", {
+          idToken: credentialResponse.credential,
+        });
 
-       <button
-  type="submit"
-  disabled={loading}
-  className="w-full py-2 bg-blue-600 text-white rounded-3xl hover:bg-blue-700 hover:scale-[1.02] transition-transform duration-300 text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
->
-  {loading && <ButtonLoader />}
-  {loading ? "Creating..." : "Sign Up"}
-</button>
+        const { token } = res.data;
+      
+        login(token);
+        toast.success("Google Signup Success");
 
-      </form>
+        const { role } = jwtDecode(token);
+        navigate(role === "admin" ? "/admin/dashboard" : "/");
+      } catch (err) {
+        console.error("Google Signup Error:", err);
+        toast.error("Google Signup Failed");
+      }
+    }}
+    onError={() => toast.error("Google Sign In Failed")}
+  />
+</div>
 
-      <div className="mt-4 transition-transform px-12 duration-300 hover:scale-[1.02]">
-        <GoogleButton
-          className="w-full"
-          onClick={() => toast("Google login not implemented")}
-        />
-      </div>
-
-      <p className="text-center mt-4 text-sm text-gray-600">
-        Already have an account?{" "}
-        <a href="/login" className="text-blue-600 hover:underline">
-          Login
-        </a>
-      </p>
+        <p className="text-center mt-4 text-sm text-gray-600">
+          Already have an account?{" "}
+          <a
+            href="/login"
+            className="text-blue-600 hover:underline font-medium"
+          >
+            Login
+          </a>
+        </p>
+      </motion.div>
     </div>
-  </div>
-);
+  );
 };
 
 export default Signup;
