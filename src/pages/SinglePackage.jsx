@@ -93,21 +93,21 @@ const SinglePackage = () => {
             </div>
 
             {/* Highlights */}
-            {singlePackage.highlights?.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold mt-4 mb-2">Highlights</h3>
-                <ul className="flex flex-wrap gap-2">
-                  {JSON.parse(singlePackage.highlights[0]).map((point, idx) => (
-                    <li
-                      key={idx}
-                      className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full"
-                    >
-                      {point}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+           {singlePackage.highlights?.length > 0 && (
+  <div>
+    <h3 className="text-lg font-semibold mt-4 mb-2">Highlights</h3>
+    <ul className="flex flex-wrap gap-2">
+      {singlePackage.highlights.map((point, idx) => (
+        <li
+          key={idx}
+          className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full"
+        >
+          {point}
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
 
             <button
               onClick={() => navigate(`/checkout/${singlePackage._id}`)}
