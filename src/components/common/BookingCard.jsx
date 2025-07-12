@@ -13,9 +13,9 @@ const BookingCard = ({ booking }) => {
   } = booking;
 
   const handleReviewClick = () => {
-    navigate(`/review/${tripPackages._id}`, {
+    navigate(`/review/${tripPackage._id}`, {
       state: {
-        packageTitle: tripPackages.title,
+        packageTitle: tripPackage.title,
       },
     });
   };
@@ -40,16 +40,16 @@ const BookingCard = ({ booking }) => {
       <div className="p-5 flex flex-col gap-2">
         <div className="flex justify-between items-center">
           <h3 className="text-xl font-semibold text-gray-800">
-            {tripPackages?.title}
+            {tripPackage?.title}
           </h3>
           {statusIcon}
         </div>
-        <p className="text-gray-600 text-sm">{tripPackages?.location}</p>
+        <p className="text-gray-600 text-sm">{tripPackage?.location}</p>
 
         <div className="text-sm text-gray-700 mt-2 space-y-1">
           <p>
             <span className="font-medium">Duration:</span>{" "}
-            {tripPackages?.days} Days
+            {tripPackage?.days} Days
           </p>
           <p>
             <span className="font-medium">Travellers:</span> {noOfPerson}
