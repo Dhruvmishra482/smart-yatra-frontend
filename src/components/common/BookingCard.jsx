@@ -5,7 +5,7 @@ const BookingCard = ({ booking }) => {
   const navigate = useNavigate();
 
   const {
-    tripPackages,
+    tripPackage,
     totalAmount,
     noOfPerson,
     status,
@@ -32,8 +32,8 @@ const BookingCard = ({ booking }) => {
   return (
     <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition duration-300 overflow-hidden border border-gray-200 flex flex-col justify-between">
       <img
-        src={tripPackages?.images?.[0]?.url || "/default-image.jpg"}
-        alt={tripPackages?.title}
+        src={tripPackage?.images?.[0]?.url || "/default-image.jpg"}
+        alt={tripPackage?.title}
         className="w-full h-48 object-cover"
       />
 
