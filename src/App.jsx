@@ -31,6 +31,7 @@ import ScrollToTop from "./utils/ScrollToTop";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import MyDetails from "./pages/user/MyDetails";
 import AdminDetails from "./pages/admin/AdminDetails";
+import LeaveReview from "./pages/user/LeaveReview";
 
 function App() {
   return (
@@ -48,6 +49,8 @@ function App() {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        
+
 
         <Route path="/verify-email" element={<VerifyEmail />} />
 
@@ -76,6 +79,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+           <Route
+          path="/review/:id"
+          element={
+            <ProtectedRoute allowedRoles={["visitor"]}>
+            <LeaveReview/>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/my-details"
           element={
