@@ -25,7 +25,7 @@ const LeaveReview = () => {
     try {
       setLoading(true);
       const { data } = await api.post(
-        "/create-review",
+        "/reviews/create-review",
         { tripPackageId, rating, comment },
         { headers: { Authorization: `Bearer ${token}` } }
       );
