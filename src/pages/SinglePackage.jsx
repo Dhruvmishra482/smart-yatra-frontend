@@ -8,6 +8,7 @@ import {
   FaClock,
   FaTag,
   FaUserAlt,
+  FaStar,
 } from "react-icons/fa";
 
 const SinglePackage = () => {
@@ -32,7 +33,12 @@ const SinglePackage = () => {
     fetchPackage();
   }, [id]);
 
-  if (loading) return <div className="mt-20"><Spinner /></div>;
+  if (loading)
+    return (
+      <div className="mt-20 flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    );
 
   if (!singlePackage)
     return (
@@ -42,104 +48,105 @@ const SinglePackage = () => {
     );
 
   return (
-    <div className="min-h-screen pt-24 px-6 bg-gradient-to-b from-blue-50 via-gray-50 to-white">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen pt-24 px-4 bg-gradient-to-br from-blue-100 via-pink-100 to-purple-100">
+      <div className="max-w-7xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="flex flex-col lg:flex-row gap-10 bg-white p-6 rounded-xl shadow-lg"
+          className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl p-6 md:p-10 flex flex-col lg:flex-row gap-10"
         >
           {/* Image Section */}
-          <div className="lg:w-1/2">
+          <div className="lg:w-1/2 rounded-xl overflow-hidden shadow-md">
             <img
               src={singlePackage.images?.[0]?.url || "/default.jpg"}
               alt={singlePackage.title}
-              className="w-full h-[400px] object-cover rounded-lg"
+              className="w-full h-[400px] object-cover rounded-xl"
             />
           </div>
 
-          {/* Package Info */}
+          {/* Package Details */}
           <div className="lg:w-1/2 space-y-4">
-            <h1 className="text-3xl font-bold text-gray-800">
+            <h1 className="text-3xl font-bold text-blue-800">
               {singlePackage.title}
             </h1>
-            <p className="text-gray-600">{singlePackage.description}</p>
+            <p className="text-gray-600 leading-relaxed">{singlePackage.description}</p>
 
-            <div className="space-y-2 text-sm text-gray-700 mt-4">
+            <div className="grid grid-cols-2 gap-4 mt-4 text-sm text-gray-700">
               <div className="flex items-center gap-2">
-                <FaMapMarkerAlt className="text-blue-600" />
+                <FaMapMarkerAlt className="text-red-500" />
                 <span>{singlePackage.location}</span>
               </div>
               <div className="flex items-center gap-2">
-                <FaClock className="text-yellow-600" />
+                <FaClock className="text-yellow-500" />
                 <span>{singlePackage.days} Days</span>
               </div>
               <div className="flex items-center gap-2">
                 <FaTag className="text-green-600" />
-                <span className="text-lg font-bold text-green-700">
+                <span className="font-bold text-lg text-green-700">
                   ₹{singlePackage.price}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <FaUserAlt className="text-gray-600" />
+                <FaUserAlt className="text-blue-500" />
                 <span className="text-sm">
-                  Created by: {singlePackage.createdBy?.email}
+                  By: {singlePackage.createdBy?.email}
                 </span>
               </div>
-              <p>
+              <div className="col-span-2">
                 <strong>Category:</strong> {singlePackage.category}
-              </p>
+              </div>
             </div>
 
             {/* Highlights */}
-           {singlePackage.highlights?.length > 0 && (
-  <div>
-    <h3 className="text-lg font-semibold mt-4 mb-2">Highlights</h3>
-    <ul className="flex flex-wrap gap-2">
-      {singlePackage.highlights.map((point, idx) => (
-        <li
-          key={idx}
-          className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full"
-        >
-          {point}
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
+            {singlePackage.highlights?.length > 0 && (
+              <div className="mt-6">
+                <h3 className="font-semibold text-gray-800 mb-2">Highlights</h3>
+                <ul className="flex flex-wrap gap-2">
+                  {singlePackage.highlights.map((point, idx) => (
+                    <li
+                      key={idx}
+                      className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium"
+                    >
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <button
               onClick={() => navigate(`/checkout/${singlePackage._id}`)}
-              className="mt-6 bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-3 rounded-lg shadow-md"
+              className="mt-6 w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 rounded-xl shadow-lg hover:scale-105 transition-transform duration-300"
             >
-              Book This Package
+              🚀 Book This Package
             </button>
           </div>
         </motion.div>
 
-        {/* Reviews */}
-        <div className="mt-12 bg-white p-6 rounded-xl shadow">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-800">Reviews</h2>
-          {singlePackage.reviews.length === 0 ? (
+        {/* Reviews Section */}
+        <div className="mt-12 bg-white/80 backdrop-blur-md p-6 md:p-10 rounded-3xl shadow-xl">
+          <h2 className="text-2xl font-bold mb-6 text-gray-800">User Reviews</h2>
+          {singlePackage.reviews?.length === 0 ? (
             <p className="text-gray-500">No reviews yet.</p>
           ) : (
-            <div className="space-y-4">
+            <div className="grid gap-6">
               {singlePackage.reviews.map((rev) => (
                 <div
                   key={rev._id}
-                  className="flex items-start gap-4 p-4 border border-gray-200 rounded-lg"
+                  className="p-4 border border-gray-200 rounded-xl flex gap-4 items-start shadow-sm hover:shadow-md transition"
                 >
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
+                  <div className="w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                     {rev.user?.name?.charAt(0)}
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-800">
-                      {rev.user?.name}
-                    </p>
-                    <p className="text-gray-600 text-sm mt-1">
-                      {rev.review}
-                    </p>
+                    <p className="font-semibold text-gray-800">{rev.user?.name}</p>
+                    <div className="flex items-center gap-1 text-yellow-500 mt-1">
+                      {[...Array(rev.rating)].map((_, i) => (
+                        <FaStar key={i} size={14} />
+                      ))}
+                    </div>
+                    <p className="text-gray-600 text-sm mt-2">{rev.comment}</p>
                   </div>
                 </div>
               ))}

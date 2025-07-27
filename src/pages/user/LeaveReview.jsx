@@ -1,92 +1,106 @@
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import React, { useState } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import api from "../utils/axiosInstance";
 import toast from "react-hot-toast";
-import api from "../../utils/axiosInstance";
-import { useAuth } from "../../context/AuthContext";
+import { FaStar } from "react-icons/fa";
+import { motion } from "framer-motion";
+import Spinner from "../../components/common/Spinner";
 
 const LeaveReview = () => {
-  const { id: tripPackageId } = useParams();
-  const { state } = useLocation();
-  const { packageTitle } = state || {};
-  const { token } = useAuth();
+  const { id } = useParams(); // packageId
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [rating, setRating] = useState(5);
+  const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState(null);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const packageTitle = location.state?.packageTitle || "Trip Package";
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!rating || !comment.trim()) {
-      toast.error("Please fill all fields.");
+    if (!rating || !comment) {
+      toast.error("Please provide both rating and comment.");
       return;
     }
 
     try {
       setLoading(true);
-      const { data } = await api.post(
-        "/reviews/create-review",
-        { tripPackageId, rating, comment },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await api.post("/reviews/create-review", {
+        tripPackageId: id,
+        rating,
+        comment,
+      });
 
-      if (data.success) {
-        toast.success("Review submitted!");
-        navigate("/my-bookings");
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to submit review.");
+      toast.success("Review submitted successfully!");
+      navigate(`/package/${id}`);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Failed to submit review.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-r from-sky-200 to-blue-100 px-4 py-10">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-xl border border-gray-200 animate-fade-in-up"
+    <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-gradient-to-tr from-blue-100 via-purple-100 to-pink-100">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-xl bg-white shadow-2xl rounded-xl p-8"
       >
-        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center text-blue-700">
-          Leave a Review for{" "}
-          <span className="text-black">{packageTitle || "the package"}</span>
+        <h2 className="text-2xl font-bold text-center text-blue-700 mb-6">
+          Leave a Review for
+          <span className="block text-purple-600">{packageTitle}</span>
         </h2>
 
-        <label className="block mb-4">
-          <span className="text-gray-700 font-medium">Rating (1-5)</span>
-          <input
-            type="number"
-            min="1"
-            max="5"
-            value={rating}
-            onChange={(e) => setRating(e.target.value)}
-            className="w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-            required
-          />
-        </label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Rating */}
+          <div className="flex items-center justify-center gap-2">
+            {[...Array(5)].map((_, index) => {
+              const current = index + 1;
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => setRating(current)}
+                  onMouseEnter={() => setHover(current)}
+                  onMouseLeave={() => setHover(null)}
+                  className="focus:outline-none"
+                >
+                  <FaStar
+                    size={32}
+                    className={`transition ${
+                      current <= (hover || rating)
+                        ? "text-yellow-400"
+                        : "text-gray-300"
+                    }`}
+                  />
+                </button>
+              );
+            })}
+          </div>
 
-        <label className="block mb-6">
-          <span className="text-gray-700 font-medium">Comment</span>
+          {/* Comment */}
           <textarea
-            rows="4"
+            rows="5"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            className="w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
-            placeholder="Share your experience..."
-            required
-          ></textarea>
-        </label>
+            placeholder="Write your honest thoughts about this trip..."
+            className="w-full px-4 py-3 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+          />
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-medium transition disabled:opacity-50"
-        >
-          {loading ? "Submitting..." : "Submit Review"}
-        </button>
-      </form>
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-3 rounded-md transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {loading ? <Spinner size={20} /> : "Submit Review"}
+          </button>
+        </form>
+      </motion.div>
     </div>
   );
 };
