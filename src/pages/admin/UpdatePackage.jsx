@@ -11,7 +11,6 @@ const UpdatePackage = () => {
   const [loading, setLoading] = useState(false);
   const [replaceImages, setReplaceImages] = useState(false);
   const [existingImages, setExistingImages] = useState([]);
-
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -26,8 +25,8 @@ const UpdatePackage = () => {
   useEffect(() => {
     const fetchPackage = async () => {
       try {
-        const response = await api.get(`/package/getpackage/${id}`);
-        const data = response.data.data;
+        const res = await api.get(`/package/getpackage/${id}`);
+        const data = res.data.data;
 
         setFormData({
           title: data.title || "",
@@ -36,15 +35,14 @@ const UpdatePackage = () => {
           price: data.price || "",
           days: data.days || "",
           category: data.category || "",
-          highlights: data.highlights.join(", ") || "",
+          highlights: data.highlights?.join(", ") || "",
+          images: null,
         });
-
         setExistingImages(data.images || []);
-      } catch (error) {
+      } catch {
         toast.error("Failed to load package data");
       }
     };
-
     fetchPackage();
   }, [id]);
 
@@ -60,68 +58,64 @@ const UpdatePackage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    try {
-      const updatedData = new FormData();
 
+    try {
+      const data = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
         if (key === "images" && value) {
-          Array.from(value).forEach((file) => {
-            updatedData.append("images", file);
-          });
+          Array.from(value).forEach((file) => data.append("images", file));
         } else {
-          updatedData.append(key, value);
+          data.append(key, value);
         }
       });
+      data.append("replaceImages", replaceImages);
 
-      updatedData.append("replaceImages", replaceImages);
-
-      const response = await api.put(`/package/updatepackage/${id}`, updatedData);
-      toast.success(response.data.message);
+      const res = await api.put(`/package/updatepackage/${id}`, data);
+      toast.success(res.data.message);
       navigate("/admin/my-packages");
-    } catch (error) {
+    } catch {
       toast.error("Failed to update package");
     }
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen px-4 py-10 bg-gradient-to-br from-white via-blue-50 to-blue-100">
-      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8">
-        <h2 className="text-3xl font-bold text-center text-blue-800 mb-6 mt-4 animate-fade-in-up">
+    <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-blue-100 px-4 py-12">
+      <div className="max-w-4xl mx-auto bg-white/70 backdrop-blur-md border border-white/30 rounded-2xl shadow-xl p-8">
+        <h2 className="text-3xl font-bold text-center text-blue-800 mb-8">
           Update Travel Package
         </h2>
 
-        {existingImages.length > 0 && !replaceImages && (
-          <div className="mb-6">
-            <h4 className="text-lg text-gray-700 font-semibold mb-3">Current Images</h4>
+        {/* Show Existing Images */}
+        {!replaceImages && existingImages.length > 0 && (
+          <div className="mb-8">
+            <h4 className="text-lg font-semibold text-gray-700 mb-3">Current Images</h4>
             <div className="grid grid-cols-2 gap-4">
               {existingImages.map((img, idx) => (
                 <img
                   key={idx}
                   src={img.url}
-                  alt={`existing-${idx}`}
-                  className="rounded-lg border shadow object-cover w-full h-40 hover:scale-[1.02] transition duration-300"
+                  alt={`preview-${idx}`}
+                  className="w-full h-40 rounded-lg object-cover shadow hover:scale-[1.03] transition"
                 />
               ))}
             </div>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Input fields */}
+        {/* Form Starts */}
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Fields */}
           {[
-            { name: "title", type: "text", placeholder: "e.g. Manali Adventure" },
-            { name: "description", type: "text", placeholder: "Full description" },
-            { name: "location", type: "text", placeholder: "e.g. Manali" },
-            { name: "price", type: "number", placeholder: "e.g. 9999" },
-            { name: "days", type: "number", placeholder: "e.g. 5" },
-            { name: "category", type: "text", placeholder: "Adventure, Spiritual, etc." },
-            { name: "highlights", type: "text", placeholder: "Comma separated: Trekking, Rafting" },
+            { name: "title", label: "Title", type: "text", placeholder: "e.g. Kashmir Retreat" },
+            { name: "location", label: "Location", type: "text", placeholder: "e.g. Srinagar" },
+            { name: "price", label: "Price", type: "number", placeholder: "e.g. 15000" },
+            { name: "days", label: "Days", type: "number", placeholder: "e.g. 4" },
+            { name: "category", label: "Category", type: "text", placeholder: "Adventure, Spiritual..." },
+            { name: "highlights", label: "Highlights", type: "text", placeholder: "Comma separated" },
           ].map((field) => (
             <div key={field.name}>
-              <label className="block text-sm font-medium text-gray-700 capitalize mb-1">
-                {field.name}
-              </label>
+              <label className="block text-sm text-gray-700 mb-1 font-medium">{field.label}</label>
               <input
                 type={field.type}
                 name={field.name}
@@ -129,47 +123,63 @@ const UpdatePackage = () => {
                 onChange={handleChange}
                 placeholder={field.placeholder}
                 required
-                className="w-full px-4 py-2 border rounded-lg shadow-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                className="input-style"
               />
             </div>
           ))}
 
-          {/* Image Replace Toggle */}
-          <div className="flex items-center gap-3">
+          {/* Description (full row) */}
+          <div className="md:col-span-2">
+            <label className="block text-sm text-gray-700 mb-1 font-medium">Description</label>
+            <textarea
+              name="description"
+              rows="4"
+              value={formData.description}
+              onChange={handleChange}
+              className="input-style resize-none"
+              placeholder="Write a detailed description..."
+              required
+            />
+          </div>
+
+          {/* Replace Image Checkbox (full row) */}
+          <div className="md:col-span-2 flex items-center gap-3">
             <input
               type="checkbox"
-              id="replaceImages"
+              id="replace"
               checked={replaceImages}
-              onChange={() => setReplaceImages((prev) => !prev)}
-              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+              onChange={() => setReplaceImages(!replaceImages)}
+              className="accent-blue-600 w-4 h-4"
             />
-            <label htmlFor="replaceImages" className="text-sm text-gray-700">
+            <label htmlFor="replace" className="text-sm text-gray-700">
               Replace Existing Images
             </label>
           </div>
 
-          {/* File Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Upload New Images</label>
+          {/* File Upload (full row) */}
+          <div className="md:col-span-2">
+            <label className="block text-sm text-gray-700 mb-1 font-medium">Upload New Images</label>
             <input
               type="file"
               name="images"
               multiple
               accept="image/*"
               onChange={handleChange}
-              className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-blue-600 file:text-white file:rounded-lg hover:file:bg-blue-700 transition"
+              className="w-full file:bg-blue-600 file:text-white file:py-2 file:px-4 file:rounded-lg hover:file:bg-blue-700 transition text-sm"
             />
           </div>
 
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold rounded-lg flex justify-center items-center gap-2 disabled:opacity-50"
-          >
-            {loading && <ButtonLoader />}
-            {loading ? "Updating..." : "Update Package"}
-          </button>
+          {/* Submit (full row) */}
+          <div className="md:col-span-2">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg flex justify-center items-center gap-2 disabled:opacity-50"
+            >
+              {loading && <ButtonLoader />}
+              {loading ? "Updating..." : "Update Package"}
+            </button>
+          </div>
         </form>
       </div>
     </div>

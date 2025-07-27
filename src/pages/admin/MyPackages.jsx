@@ -25,8 +25,8 @@ const MyPackages = () => {
   }, []);
 
   const handleDelete = async (id) => {
-    const confirm = window.confirm("Are you sure you want to delete this package?");
-    if (!confirm) return;
+    const confirmDelete = window.confirm("Are you sure you want to delete this package?");
+    if (!confirmDelete) return;
 
     try {
       await api.delete(`/package/deletepackage/${id}`);
@@ -38,14 +38,14 @@ const MyPackages = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 px-6 py-12 mt-10">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 px-6 py-16">
       <motion.h2
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-4xl font-bold text-center text-blue-800 mb-10"
+        className="text-4xl font-bold text-center text-blue-800 mb-12"
       >
-        My Created Packages
+        📦 My Created Packages
       </motion.h2>
 
       {loading ? (
@@ -56,7 +56,7 @@ const MyPackages = () => {
         <p className="text-center text-gray-500 text-lg">No packages found.</p>
       ) : (
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
           initial="hidden"
           animate="visible"
           variants={{
@@ -75,14 +75,17 @@ const MyPackages = () => {
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0 },
               }}
-              className="rounded-xl overflow-hidden shadow-xl border border-white/40 backdrop-blur-lg bg-white/70 hover:shadow-2xl transition-all duration-300"
+              className="rounded-xl overflow-hidden shadow-xl relative border border-white/40 backdrop-blur-lg bg-white/80 hover:shadow-2xl transition duration-300"
             >
-              <img
-                src={pkg.images?.[0]?.url || "https://via.placeholder.com/400x200"}
-                alt={pkg.title}
-                className="w-full h-48 object-cover"
-                loading="lazy"
-              />
+              <div className="relative group">
+                <img
+                  src={pkg.images?.[0]?.url || "https://via.placeholder.com/400x200"}
+                  alt={pkg.title}
+                  className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-40 transition duration-300"></div>
+              </div>
+
               <div className="p-4 flex flex-col gap-2">
                 <h3 className="text-xl font-semibold text-blue-800">{pkg.title}</h3>
                 <p className="text-gray-600 text-sm flex items-center gap-1">
@@ -96,13 +99,13 @@ const MyPackages = () => {
                 <div className="flex justify-between mt-4">
                   <Link
                     to={`/admin/update-package/${pkg._id}`}
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition"
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm transition"
                   >
-                    <FaEdit /> Update
+                    <FaEdit /> Edit
                   </Link>
                   <button
                     onClick={() => handleDelete(pkg._id)}
-                    className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition"
+                    className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition"
                   >
                     <FaTrash /> Delete
                   </button>
