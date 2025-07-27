@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { FcGoogle } from "react-icons/fc";
+
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../context/AuthContext";
@@ -138,7 +138,7 @@ function LoginForm() {
             idToken: credentialResponse.credential,
           },
           {
-            withCredentials: true, // ✅ send cookie with request (already set in axios instance)
+            withCredentials: true, // 
           }
         );
 
