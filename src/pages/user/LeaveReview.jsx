@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import api from "../utils/axiosInstance";
+import api from "../../utils/axiosInstance";
 import toast from "react-hot-toast";
 import { FaStar } from "react-icons/fa";
 import { motion } from "framer-motion";
