@@ -11,10 +11,9 @@ const Explore = () => {
     const fetchPackages = async () => {
       try {
         const response = await api.get("/package/getallpackage");
-      
         setPackages(response.data.data);
       } catch (error) {
-       
+        console.error("Error fetching packages", error);
       }
       setLoading(false);
     };
@@ -23,17 +22,17 @@ const Explore = () => {
   }, []);
 
   return (
-    <div className="min-h-screen pt-24 px-6 bg-gray-100">
-      <h1 className="text-3xl font-bold text-center mb-10 text-gray-800">
-        Explore Our Packages
+    <div className="min-h-screen pt-24 px-6 bg-gradient-to-br from-blue-50 via-white to-blue-100">
+      <h1 className="text-4xl font-extrabold text-center mb-10 bg-gradient-to-r from-blue-700 to-indigo-500 text-transparent bg-clip-text">
+        Explore Stunning Travel Packages
       </h1>
 
       {loading ? (
-        <p className="text-center text-gray-500 text-lg"><Spinner/></p>
+        <div className="flex justify-center mt-10"><Spinner /></div>
       ) : packages.length === 0 ? (
-        <p className="text-center text-gray-400 text-lg">No Packages Found</p>
+        <p className="text-center text-gray-500 text-lg">No Packages Found</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {packages.map((pkg) => (
             <PackageCard
               key={pkg._id}
@@ -43,7 +42,7 @@ const Explore = () => {
               price={pkg.price}
               location={pkg.location}
               duration={pkg.duration}
-               images={pkg.images}
+              images={pkg.images}
             />
           ))}
         </div>

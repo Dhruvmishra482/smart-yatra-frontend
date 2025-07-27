@@ -29,19 +29,19 @@ const PackageCard = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 hover:scale-[1.02]">
+    <div className="group bg-white/70 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.025] transform hover:-rotate-1">
       <img
-        className="w-full h-52 object-cover"
         src={images?.[0]?.url || "/default-image.jpg"}
         alt={title}
+        className="w-full h-52 object-cover rounded-t-2xl group-hover:opacity-90 transition"
       />
 
-      <div className="p-5">
-        <h3 className="text-xl font-semibold text-gray-800 line-clamp-1">{title}</h3>
+      <div className="p-5 space-y-3">
+        <h3 className="text-xl font-bold text-blue-800 line-clamp-1">{title}</h3>
 
-        <div className="flex items-center text-sm text-gray-500 mt-2 gap-4">
+        <div className="flex items-center text-sm text-gray-600 gap-4">
           <span className="flex items-center gap-1">
-            <FaMapMarkerAlt className="text-blue-500" />
+            <FaMapMarkerAlt className="text-rose-500" />
             {location}
           </span>
           <span className="flex items-center gap-1">
@@ -50,20 +50,20 @@ const PackageCard = ({
           </span>
         </div>
 
-        <p className="text-gray-600 mt-3 text-sm line-clamp-2">{description}</p>
+        <p className="text-gray-700 text-sm line-clamp-2">{description}</p>
 
-        <div className="flex justify-between items-center mt-5">
-          <span className="text-lg font-bold text-blue-600">₹{price}</span>
+        <div className="flex justify-between items-center mt-4">
+          <span className="text-lg font-semibold text-indigo-600">₹{price}</span>
           <div className="flex gap-2">
             <button
               onClick={handleViewMore}
-              className="px-3 py-1.5 border border-gray-300 rounded-md text-sm hover:bg-gray-100 transition"
+              className="px-4 py-1.5 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-100 transition"
             >
               View
             </button>
             <button
               onClick={handleBookNow}
-              className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md transition"
+              className="px-4 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm rounded-md transition"
             >
               Book
             </button>
