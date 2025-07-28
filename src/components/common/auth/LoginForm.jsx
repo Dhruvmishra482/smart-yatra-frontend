@@ -144,7 +144,7 @@ function LoginForm() {
 
         const { token } = res.data;
 
-        login(token); // ✅ context update (React)
+        login(token); //  context update (React)
 
         const { role } = jwtDecode(token);
         toast.success("Google Login Successful");

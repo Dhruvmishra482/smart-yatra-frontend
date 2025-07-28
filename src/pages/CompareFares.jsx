@@ -45,13 +45,16 @@ const CompareFares = () => {
 
   const handleDownloadPDF = () => {
     const element = pdfRef.current;
-    html2pdf().from(element).set({
-      margin: 0.5,
-      filename: `fares_${formData.from}_to_${formData.to}.pdf`,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-    }).save();
+    html2pdf()
+      .from(element)
+      .set({
+        margin: 0.5,
+        filename: `fares_${formData.from}_to_${formData.to}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+      })
+      .save();
   };
 
   const getIcon = (mode) => {
@@ -61,9 +64,9 @@ const CompareFares = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-sky-100 px-4 py-14 mt-14">
+    <div className="min-h-screen bg-gradient-to-bl from-indigo-100 via-white to-sky-100 px-4 py-20">
       <motion.h1
-        className="text-4xl font-bold text-center text-blue-700 mb-10"
+        className="text-5xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-700 mb-14"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -74,7 +77,7 @@ const CompareFares = () => {
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        className="max-w-5xl mx-auto bg-white shadow-lg rounded-2xl grid grid-cols-1 md:grid-cols-2 gap-6 p-6"
+        className="max-w-5xl mx-auto bg-white shadow-2xl rounded-3xl grid grid-cols-1 md:grid-cols-2 gap-6 p-8"
       >
         <input
           type="text"
@@ -82,7 +85,7 @@ const CompareFares = () => {
           placeholder="From (City)"
           value={formData.from}
           onChange={handleChange}
-          className="border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-400"
+          className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400"
           required
         />
         <input
@@ -91,7 +94,7 @@ const CompareFares = () => {
           placeholder="To (City)"
           value={formData.to}
           onChange={handleChange}
-          className="border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-400"
+          className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400"
           required
         />
         <input
@@ -99,14 +102,14 @@ const CompareFares = () => {
           name="travelDate"
           value={formData.travelDate}
           onChange={handleChange}
-          className="border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-400"
+          className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400"
           required
         />
         <select
           name="modeOfTransport"
           value={formData.modeOfTransport}
           onChange={handleChange}
-          className="border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-400"
+          className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400"
         >
           <option value="">All Modes</option>
           <option value="bus">Bus</option>
@@ -117,7 +120,7 @@ const CompareFares = () => {
         <button
           type="submit"
           disabled={loading}
-          className="md:col-span-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-xl transition flex items-center justify-center gap-2"
+          className="md:col-span-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2"
         >
           {loading && <ButtonLoader />}
           {loading ? "Comparing..." : "Compare Fares"}
@@ -125,12 +128,12 @@ const CompareFares = () => {
       </form>
 
       {/* Result Section */}
-      <div className="max-w-6xl mx-auto mt-12 relative">
+      <div className="max-w-6xl mx-auto mt-16 relative">
         {fares.length > 0 && (
           <div className="flex justify-end mb-6">
             <button
               onClick={handleDownloadPDF}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm shadow"
+              className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white px-5 py-2 rounded-lg text-sm shadow-md"
             >
               📄 Download as PDF
             </button>
@@ -140,7 +143,7 @@ const CompareFares = () => {
         <div ref={pdfRef}>
           {fares.length > 0 ? (
             <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -148,14 +151,14 @@ const CompareFares = () => {
               {fares.map((fare, idx) => (
                 <div
                   key={idx}
-                  className="bg-white shadow-xl border border-gray-200 rounded-xl p-5 transition-all hover:shadow-2xl"
+                  className="bg-white shadow-lg border border-gray-200 rounded-2xl p-6 transition-all hover:shadow-2xl"
                 >
-                  <div className="flex justify-between items-center mb-2">
+                  <div className="flex justify-between items-center mb-3">
                     <div className="flex items-center gap-1 font-semibold text-blue-800">
                       {getIcon(fare.mode)}
                       {fare.operator}
                     </div>
-                    <span className="text-green-600 font-bold text-lg">
+                    <span className="text-green-600 font-bold text-xl">
                       ₹{fare.fare}
                     </span>
                   </div>

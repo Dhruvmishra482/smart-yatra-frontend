@@ -3,12 +3,11 @@ import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import api from "../../../utils/axiosInstance";
 import ButtonLoader from "../ButtonLoader";
-import GoogleButton from "react-google-button";
 import { motion } from "framer-motion";
-
 import { useAuth } from "../../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import { GoogleLogin } from "@react-oauth/google";
+
 const Signup = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -44,22 +43,21 @@ const Signup = () => {
     }
     setLoading(false);
   };
-  
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-blue-100 via-white to-blue-200">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-bl from-blue-100 via-white to-indigo-100">
       <motion.div
-        initial={{ opacity: 0, scale: 0.96 }}
+        initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md bg-white/70 backdrop-blur-lg border border-white/30 rounded-2xl shadow-xl p-8"
+        className="w-full max-w-lg bg-white/80 backdrop-blur-xl border border-white/30 rounded-3xl shadow-2xl p-10"
       >
-        <h2 className="text-3xl font-bold text-center text-blue-700 mb-6">
+        <h2 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-700 mb-8">
           Sign Up
         </h2>
 
         <form onSubmit={submitHandler} className="space-y-4 text-sm">
-          <div className="flex gap-3">
+          <div className="flex flex-col md:flex-row gap-4">
             <input
               type="text"
               name="firstName"
@@ -67,7 +65,7 @@ const Signup = () => {
               value={formData.firstName}
               onChange={changeHandler}
               required
-              className="w-1/2 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
             />
             <input
               type="text"
@@ -76,7 +74,7 @@ const Signup = () => {
               value={formData.lastName}
               onChange={changeHandler}
               required
-              className="w-1/2 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
             />
           </div>
 
@@ -87,7 +85,7 @@ const Signup = () => {
             value={formData.mobileNumber}
             onChange={changeHandler}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
           />
 
           <input
@@ -97,7 +95,7 @@ const Signup = () => {
             value={formData.email}
             onChange={changeHandler}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
           />
 
           <input
@@ -107,7 +105,7 @@ const Signup = () => {
             value={formData.password}
             onChange={changeHandler}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
           />
 
           <input
@@ -117,7 +115,7 @@ const Signup = () => {
             value={formData.confirmPassword}
             onChange={changeHandler}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 outline-none"
           />
 
           <select
@@ -125,7 +123,7 @@ const Signup = () => {
             value={formData.accountType}
             onChange={changeHandler}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-400 outline-none"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-blue-400 outline-none"
           >
             <option value="visitor">Visitor</option>
             <option value="admin">Admin</option>
@@ -134,41 +132,39 @@ const Signup = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition-all flex justify-center items-center gap-2"
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 rounded-xl font-semibold transition-all flex justify-center items-center gap-2"
           >
             {loading && <ButtonLoader />}
             {loading ? "Creating..." : "Sign Up"}
           </button>
         </form>
 
-        {/* Google Auth Button */}
-        <div className="mt-5">
-  <GoogleLogin
-    width="100%"
-    onSuccess={async (credentialResponse) => {
-      try {
-        const res = await api.post("/auth/google", {
-          idToken: credentialResponse.credential,
-        });
+        <div className="mt-6">
+          <GoogleLogin
+            width="100%"
+            onSuccess={async (credentialResponse) => {
+              try {
+                const res = await api.post("/auth/google", {
+                  idToken: credentialResponse.credential,
+                });
 
-        const { token } = res.data;
-      
-        login(token);
-        toast.success("Google Signup Success");
+                const { token } = res.data;
+                login(token);
+                toast.success("Google Signup Success");
 
-        const { role } = jwtDecode(token);
-        navigate(role === "admin" ? "/admin/dashboard" : "/");
-      } catch (err) {
-        console.error("Google Signup Error:", err);
-        toast.error("Google Signup Failed");
-      }
-    }}
-    onError={() => toast.error("Google Sign In Failed")}
-  />
-</div>
+                const { role } = jwtDecode(token);
+                navigate(role === "admin" ? "/admin/dashboard" : "/");
+              } catch (err) {
+                console.error("Google Signup Error:", err);
+                toast.error("Google Signup Failed");
+              }
+            }}
+            onError={() => toast.error("Google Sign In Failed")}
+          />
+        </div>
 
-        <p className="text-center mt-4 text-sm text-gray-600">
-          Already have an account?{" "}
+        <p className="text-center mt-6 text-sm text-gray-600">
+          Already have an account?{' '}
           <a
             href="/login"
             className="text-blue-600 hover:underline font-medium"
